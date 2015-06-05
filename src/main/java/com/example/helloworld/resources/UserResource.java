@@ -1,9 +1,5 @@
 package com.example.helloworld.resources;
 
-<<<<<<< HEAD
-import io.dropwizard.hibernate.UnitOfWork;
-
-=======
 import com.codahale.metrics.annotation.Timed;
 import com.example.helloworld.dao.*;
 import com.example.helloworld.entities.DepartResponse;
@@ -21,7 +17,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
->>>>>>> cb9bf9380f095c0bf3fa154550651a9b3308c81f
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
