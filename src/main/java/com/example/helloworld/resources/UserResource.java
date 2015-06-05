@@ -6,12 +6,17 @@ import com.example.helloworld.entities.DepartResponse;
 import com.example.helloworld.entities.RideSeekersResponse;
 import com.example.helloworld.entities.core.*;
 import com.google.common.base.Optional;
+import com.google.common.io.Files;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,13 +51,20 @@ public class UserResource {
     @Timed
     @Path("add")
     @UnitOfWork
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
     public HashMap<String, Object> addUser(@FormParam("company_id") Optional<Long> companyId,
                         @FormParam("name") Optional<String> name,
                         @FormParam("gender") Optional<String> gender,
                         @FormParam("company_email") Optional<String> companyEmail,
                         @FormParam("contact_number") Optional<String> contactNumber,
                         @FormParam("profile_image_url") Optional<String> profileImageURL,
-                        @FormParam("verified") Optional<Integer> verified) {
+                        @FormParam("verified") Optional<Integer> verified,
+                        @FormDataParam("file") final InputStream fileInputStream,
+                        @FormDataParam("file") final FormDataContentDisposition contentDispositionHeader) throws IOException {
+
+        String filePath = "~/images/" + contentDispositionHeader.getFileName();
+        saveFile(fileInputStream, filePath);
+
         Company company = companyDAO.findById(companyId.get());
         Long userID = userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL.orNull()));
         //return userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL.orNull()));
@@ -63,6 +75,18 @@ public class UserResource {
         returnValue.put("verificationCode", emailToken);
         returnValue.put("userID", userID);
         return returnValue;
+    }
+
+    private void saveFile(InputStream uploadedInputStream, String uploadedFileLocation) throws IOException {
+        int read;
+        final int BUFFER_LENGTH = 1024;
+        final byte[] buffer = new byte[BUFFER_LENGTH];
+        OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
+        while ((read = uploadedInputStream.read(buffer)) != -1) {
+            out.write(buffer, 0, read);
+        }
+        out.flush();
+        out.close();
     }
 
     private String sendVerificationEmail(String name, String email) {
