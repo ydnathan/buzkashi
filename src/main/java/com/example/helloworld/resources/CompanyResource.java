@@ -51,4 +51,13 @@ public class CompanyResource {
     public List<Company> allCompanies() {
         return dao.findAll();
     }
+    
+    @GET
+    @Timed
+    @Path("findCompaniesByCity")
+    @UnitOfWork
+    public List<Company> findCompanyByCityCode(@QueryParam("city") String city) {
+        return dao.findCompaniesByCityCode(city);
+    }
+
 }

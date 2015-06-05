@@ -36,12 +36,13 @@ public class HibernateApplication extends Application<HibernateConfiguration> {
         final RideDAO rideDAO = new RideDAO(sessionFactory);
         final RequestDAO requestDAO = new RequestDAO(sessionFactory);
         final RouteDestinationMapDAO routeDestinationMapDAO = new RouteDestinationMapDAO(sessionFactory);
+        final PublishedRideDAO publishedRideDAO = new PublishedRideDAO(sessionFactory);
 
         environment.jersey().register(new DestinationResource(destinationDAO));
         environment.jersey().register(new CompanyResource(companyDAO));
-        environment.jersey().register(new UserResource(userDAO, companyDAO, destinationDAO, routeDAO, rideDAO));
+        environment.jersey().register(new UserResource(userDAO, companyDAO, destinationDAO, routeDAO, rideDAO,publishedRideDAO));
         environment.jersey().register(new RouteResource(routeDAO, userDAO, companyDAO, destinationDAO, routeDestinationMapDAO));
-        environment.jersey().register(new RideResource(rideDAO, userDAO, requestDAO, destinationDAO));
+        environment.jersey().register(new RideResource(rideDAO, userDAO, requestDAO, destinationDAO,companyDAO,routeDAO,routeDestinationMapDAO,publishedRideDAO));
 
         environment.jersey().register(new PersonResource(new PersonDAO(sessionFactory)));
     }

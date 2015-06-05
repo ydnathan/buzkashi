@@ -39,4 +39,10 @@ public class DestinationDAO extends AbstractDAO<Destination> {
         List<Destination> destinationList = criteria.list();
         return destinationList;
     }
+    
+    public List<Destination> searchDestinationsByCity(String city) {
+        Criteria criteria = currentSession().createCriteria(Destination.class).add(Restrictions.eq("city", city));
+        List<Destination> destinationList = criteria.list();
+        return destinationList;
+    }
 }

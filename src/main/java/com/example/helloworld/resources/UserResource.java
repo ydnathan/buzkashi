@@ -28,15 +28,18 @@ public class UserResource {
     private DestinationDAO destinationDAO;
     private RouteDAO routeDAO;
     private RideDAO rideDAO;
+    private PublishedRideDAO publishedRideDAO;
 
     final static Logger logger = LoggerFactory.getLogger(UserResource.class);
 
-    public UserResource(UserDAO userDAO, CompanyDAO companyDAO, DestinationDAO destinationDAO, RouteDAO routeDAO, RideDAO rideDAO) {
+    public UserResource(UserDAO userDAO, CompanyDAO companyDAO, DestinationDAO destinationDAO, RouteDAO routeDAO, 
+    		RideDAO rideDAO, PublishedRideDAO publishedRideDAO) {
         this.companyDAO = companyDAO;
         this.userDAO = userDAO;
         this.destinationDAO = destinationDAO;
         this.routeDAO = routeDAO;
         this.rideDAO = rideDAO;
+        this.publishedRideDAO = publishedRideDAO;
     }
 
     @POST
@@ -131,4 +134,30 @@ public class UserResource {
         }
         return rideSeekersResponseList;
     }
+    
+    @GET
+    @Timed
+    @Path("published_ride_seekers")
+    @UnitOfWork
+    public List<RideSeekersResponse> getPublishedRideSeekers(@QueryParam("user_id") Optional<Long> userId, @QueryParam("ride_id") Optional<Long> rideId) {
+        // TODO : basic level of authentication..
+        User user = userDAO.findById(userId.get());
+        PublishedRide ride = publishedRideDAO.findById(rideId.get());
+        if(user == null || ride == null) {
+            return new ArrayList<RideSeekersResponse>();
+        }
+
+        List<RideSeekersResponse> rideSeekersResponseList = new ArrayList<RideSeekersResponse>();
+        Set<Request> requests = getRequests(ride);
+        for(Request request : requests) {
+            rideSeekersResponseList.add(new RideSeekersResponse(request));
+        }
+        return rideSeekersResponseList;
+    }
+    
+    //to be implemented
+    private Set<Request> getRequests(PublishedRide ride){
+    	return null;
+    }
+
 }

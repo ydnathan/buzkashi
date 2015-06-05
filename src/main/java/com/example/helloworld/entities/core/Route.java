@@ -45,18 +45,18 @@ public class Route {
     private Timestamp updatedAt;
 
 
-    //    @OneToOne(fetch = FetchType.LAZY)
-//    @PrimaryKeyJoinColumn
-//    private RouteDestinationMap routeDestinationMap;
+    @OneToOne(fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    private RouteDestinationMap routeDestinationMap;
 
 
-//    @Column(name="route_destination_map_id")
-//    @JsonProperty("route_destination_map_id")
-//    private long routeDestinationMapId;
+    @Column(name="route_destination_map_id")
+    @JsonProperty("route_destination_map_id")
+    private long routeDestinationMapId;
 
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @PrimaryKeyJoinColumn
-//    private Ride ride;
+    @OneToOne(fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
+    private Ride ride;
 
     @JsonCreator
     public Route(@JsonProperty("name") String name, @JsonProperty("created_by") User user) {
@@ -78,21 +78,21 @@ public class Route {
         this.name = name;
     }
 
-//    public RouteDestinationMap getRouteDestinationMap() {
-//        return routeDestinationMap;
-//    }
-//
-//    public void setRouteDestinationMap(RouteDestinationMap routeDestinationMap) {
-//        this.routeDestinationMap = routeDestinationMap;
-//    }
+    public RouteDestinationMap getRouteDestinationMap() {
+        return routeDestinationMap;
+    }
 
-//    public long getRouteDestinationMapId() {
-//        return routeDestinationMapId;
-//    }
-//
-//    public void setRouteDestinationMapId(long routeDestinationMapId) {
-//        this.routeDestinationMapId = routeDestinationMapId;
-//    }
+    public void setRouteDestinationMap(RouteDestinationMap routeDestinationMap) {
+        this.routeDestinationMap = routeDestinationMap;
+    }
+
+    public long getRouteDestinationMapId() {
+        return routeDestinationMapId;
+    }
+
+    public void setRouteDestinationMapId(long routeDestinationMapId) {
+        this.routeDestinationMapId = routeDestinationMapId;
+    }
 
     public User getCreatedBy() {
         return createdBy;

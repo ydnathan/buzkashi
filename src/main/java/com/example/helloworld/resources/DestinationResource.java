@@ -1,13 +1,16 @@
 package com.example.helloworld.resources;
 
 import com.codahale.metrics.annotation.Timed;
+import com.example.helloworld.entities.core.Company;
 import com.example.helloworld.entities.core.Destination;
 import com.example.helloworld.dao.DestinationDAO;
 import com.google.common.base.Optional;
+
 import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+
 import java.util.List;
 
 /**
@@ -50,4 +53,13 @@ public class DestinationResource {
     public List<Destination> searchDestinations(@QueryParam("city") Optional<String> city, @QueryParam("state") Optional<String> state) {
         return dao.searchDestinations(city.get(), state.get());
     }
+    
+    @GET
+    @Timed
+    @Path("city")
+    @UnitOfWork
+    public List<Destination> searchDestinations(@QueryParam("city") String city) {
+        return dao.searchDestinationsByCity(city);
+    }
+
 }

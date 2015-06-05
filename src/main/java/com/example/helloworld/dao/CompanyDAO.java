@@ -1,8 +1,11 @@
 package com.example.helloworld.dao;
 
 import com.example.helloworld.entities.core.Company;
+
 import io.dropwizard.hibernate.AbstractDAO;
+
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
 
@@ -24,5 +27,9 @@ public class CompanyDAO extends AbstractDAO<Company> {
 
     public List<Company> findAll() {
         return currentSession().createCriteria(Company.class).list();
+    }
+    
+    public List<Company> findCompaniesByCityCode(String city) {
+        return currentSession().createCriteria(Company.class).add(Restrictions.eq("city", city)).list();
     }
 }

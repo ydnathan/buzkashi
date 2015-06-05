@@ -39,7 +39,6 @@ public class SearchRidesResponse {
         User rideGiver = ride.getUser();
         this.userId = rideGiver.getId();
         this.userName = rideGiver.getName();
-        this.vehicleCapacity = rideGiver.getVehicleCapacity();
         this.available = ride.isAvailable();
         this.leavingAt = ride.getLeavingAt();
     }
