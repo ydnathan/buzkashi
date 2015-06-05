@@ -1,21 +1,48 @@
 package com.example.helloworld.resources;
 
-import com.codahale.metrics.annotation.Timed;
-import com.example.helloworld.dao.*;
-import com.example.helloworld.entities.DepartResponse;
-import com.example.helloworld.entities.RideSeekersResponse;
-import com.example.helloworld.entities.core.*;
-import com.google.common.base.Optional;
 import io.dropwizard.hibernate.UnitOfWork;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.ws.rs.FormParam;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.annotation.Timed;
+import com.example.helloworld.dao.CompanyDAO;
+import com.example.helloworld.dao.DestinationDAO;
+import com.example.helloworld.dao.PublishedRideDAO;
+import com.example.helloworld.dao.RideDAO;
+import com.example.helloworld.dao.RouteDAO;
+import com.example.helloworld.dao.RouteDestinationMapDAO;
+import com.example.helloworld.dao.UserDAO;
+import com.example.helloworld.entities.DepartResponse;
+import com.example.helloworld.entities.RideSeekersResponse;
+import com.example.helloworld.entities.core.Company;
+import com.example.helloworld.entities.core.PublishedRide;
+import com.example.helloworld.entities.core.Request;
+import com.example.helloworld.entities.core.Ride;
+import com.example.helloworld.entities.core.Route;
+import com.example.helloworld.entities.core.RouteDestinationMap;
+import com.example.helloworld.entities.core.User;
+import com.google.common.base.Optional;
 
 /**
  * Created by vaidyanathan.s on 11/05/15.
@@ -27,19 +54,21 @@ public class UserResource {
     private CompanyDAO companyDAO;
     private DestinationDAO destinationDAO;
     private RouteDAO routeDAO;
+    private RouteDestinationMapDAO routeDestinationMapDAO;
     private RideDAO rideDAO;
     private PublishedRideDAO publishedRideDAO;
 
     final static Logger logger = LoggerFactory.getLogger(UserResource.class);
 
     public UserResource(UserDAO userDAO, CompanyDAO companyDAO, DestinationDAO destinationDAO, RouteDAO routeDAO, 
-    		RideDAO rideDAO, PublishedRideDAO publishedRideDAO) {
+    		RideDAO rideDAO, PublishedRideDAO publishedRideDAO, RouteDestinationMapDAO routeDestinationMapDAO) {
         this.companyDAO = companyDAO;
         this.userDAO = userDAO;
         this.destinationDAO = destinationDAO;
         this.routeDAO = routeDAO;
         this.rideDAO = rideDAO;
         this.publishedRideDAO = publishedRideDAO;
+        this.routeDestinationMapDAO = routeDestinationMapDAO;
     }
 
     @POST
@@ -155,9 +184,15 @@ public class UserResource {
         return rideSeekersResponseList;
     }
     
-    //to be implemented
     private Set<Request> getRequests(PublishedRide ride){
-    	return null;
+    	long routeId = ride.getRouteId();
+    	Set<Request> requests =  new HashSet<Request>();
+    	List<RouteDestinationMap> destinationMaps = routeDestinationMapDAO.findAllDestinationMapsByRouteId(routeId);
+    	for(RouteDestinationMap map : destinationMaps){
+    		requests.addAll(routeDAO.findRequestsByDestinationId(map.getDestinationId()));
+    	}
+    	return requests;
+    	
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.helloworld.resources;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,6 +39,7 @@ import com.example.helloworld.entities.core.Destination;
 import com.example.helloworld.entities.core.PublishedRide;
 import com.example.helloworld.entities.core.PublishedRide.RideStatus;
 import com.example.helloworld.entities.core.Request;
+import com.example.helloworld.entities.core.Request.RequestStatus;
 import com.example.helloworld.entities.core.Ride;
 import com.example.helloworld.entities.core.Route;
 import com.example.helloworld.entities.core.RouteDestinationMap;
@@ -144,16 +146,30 @@ public class RideResource {
 	user_name
 	profile_image_url
 	contact_number
-
+**/
 
     @POST
     @Timed
-    @Path("approveRideSeeker")
+    @Path("approveRideSeekers")
     @UnitOfWork
-    public User approveRideSeeker(@QueryParam("user_id") Optional<Long> userId) {
-        return userDAO.findById(userId.get());
+    public List<Request> approveRideSeekers(@QueryParam("user_id") Optional<Long> userId, @QueryParam("requestIds") Optional<String> requestIdsStr) {
+    	String[] requestIds = requestIdsStr.get().split("\\s*,\\s*");
+        List<Long> requestIdList = new ArrayList<Long>();
+        for(String requestId : requestIds) {
+        	requestIdList.add(Long.parseLong(requestId));
+        }
+        List<Request> requestList = requestDAO.findById(requestIdList);
+        List<Request> approvedList = new ArrayList<Request>();
+        for(Request request : requestList){
+        	if(request.getStatus() != RequestStatus.REJECTED_LEFT_ALREADY){
+	        	request.setRequestUpdatedAt(new Timestamp(Calendar.getInstance().getTime().getTime()));
+	        	request.setStatus(RequestStatus.ACCEPTED);
+	        	approvedList.add(requestDAO.save(request));
+        	}
+        }
+        return approvedList;
     }
-     * */
+   
     
     @POST
     @Timed

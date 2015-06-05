@@ -52,6 +52,10 @@ public class RouteDestinationMap {
         return destination_id;
     }
 
+    public long getDestinationId() {
+        return destination_id;
+    }
+
     public void setDestination_id(long destination_id) {
         this.destination_id = destination_id;
     }

@@ -4,7 +4,9 @@ import com.example.helloworld.entities.core.Destination;
 import com.example.helloworld.entities.core.Request;
 import com.example.helloworld.entities.core.Ride;
 import com.example.helloworld.entities.core.User;
+
 import io.dropwizard.hibernate.AbstractDAO;
+
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
@@ -22,6 +24,13 @@ public class RequestDAO extends AbstractDAO<Request> {
     public Request findById(Long id) {
         return get(id);
     }
+    
+    public List<Request> findById(List<Long> idList) {
+        Criteria criteria = currentSession().createCriteria(Request.class).add(Restrictions.in("id", idList));
+        List<Request> requestList = criteria.list();
+        return requestList;
+    }
+
 
     public List<Request> searchRequests(Destination destination, Ride ride, User user) {
         Criteria routeDestinationMapCriteria = currentSession().createCriteria(Request.class).add(Restrictions.eq("destination", destination)).add(Restrictions.eq("ride", ride)).add(Restrictions.eq("user", user));
@@ -33,4 +42,9 @@ public class RequestDAO extends AbstractDAO<Request> {
         persist(request);
         return request;
     }
+
+	public Request save(Request request) {
+		return persist(request);
+		
+	}
 }

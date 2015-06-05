@@ -1,10 +1,14 @@
 package com.example.helloworld.dao;
 
-import com.example.helloworld.entities.core.Route;
 import io.dropwizard.hibernate.AbstractDAO;
-import org.hibernate.SessionFactory;
 
 import java.util.List;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
+
+import com.example.helloworld.entities.core.Request;
+import com.example.helloworld.entities.core.Route;
 
 /**
  * Created by vaidyanathan.s on 10/05/15.
@@ -30,6 +34,11 @@ public class RouteDAO extends AbstractDAO<Route> {
     public List<Route> findAll() {
         return currentSession().createCriteria(Route.class).list();
     }
+
+	public List<Request> findRequestsByDestinationId(long destinationId) {
+		// TODO Auto-generated method stub
+		return currentSession().createCriteria(Request.class).add(Restrictions.eq("destination_id", destinationId)).list();
+	}
 
 //    public List<Route> searchRoute(Long destination_id) {
 //        return null;

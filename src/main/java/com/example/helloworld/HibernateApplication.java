@@ -40,7 +40,7 @@ public class HibernateApplication extends Application<HibernateConfiguration> {
 
         environment.jersey().register(new DestinationResource(destinationDAO));
         environment.jersey().register(new CompanyResource(companyDAO));
-        environment.jersey().register(new UserResource(userDAO, companyDAO, destinationDAO, routeDAO, rideDAO,publishedRideDAO));
+        environment.jersey().register(new UserResource(userDAO, companyDAO, destinationDAO, routeDAO, rideDAO,publishedRideDAO, routeDestinationMapDAO));
         environment.jersey().register(new RouteResource(routeDAO, userDAO, companyDAO, destinationDAO, routeDestinationMapDAO));
         environment.jersey().register(new RideResource(rideDAO, userDAO, requestDAO, destinationDAO,companyDAO,routeDAO,routeDestinationMapDAO,publishedRideDAO));
 

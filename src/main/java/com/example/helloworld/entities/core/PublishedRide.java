@@ -103,6 +103,10 @@ public class PublishedRide {
         return route_id;
     }
 
+    public long getRouteId() {
+        return route_id;
+    }
+
     public void setRoute_id(long route_id) {
         this.route_id = route_id;
     }
