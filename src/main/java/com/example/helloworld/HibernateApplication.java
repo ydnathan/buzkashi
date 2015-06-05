@@ -8,7 +8,7 @@ import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
+//import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.hibernate.SessionFactory;
 
 /**
@@ -44,7 +44,7 @@ public class HibernateApplication extends Application<HibernateConfiguration> {
         environment.jersey().register(new UserResource(userDAO, companyDAO, destinationDAO, routeDAO, rideDAO,publishedRideDAO, routeDestinationMapDAO, requestDAO));
         environment.jersey().register(new RouteResource(routeDAO, userDAO, companyDAO, destinationDAO, routeDestinationMapDAO));
         environment.jersey().register(new RideResource(rideDAO, userDAO, requestDAO, destinationDAO,companyDAO,routeDAO,routeDestinationMapDAO,publishedRideDAO));
-        environment.jersey().register(MultiPartFeature.class);
+        //environment.jersey().register(MultiPartFeature.class);
         environment.jersey().register(new PersonResource(new PersonDAO(sessionFactory)));
     }
 

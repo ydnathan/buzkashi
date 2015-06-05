@@ -64,7 +64,7 @@ public class Ride {
     private Timestamp updatedAt;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Column(nullable = true)
+    @JoinColumn(nullable = true)
     private Request request;
 
     @JsonCreator

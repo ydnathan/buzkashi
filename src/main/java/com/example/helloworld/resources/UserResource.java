@@ -8,8 +8,6 @@ import com.example.helloworld.entities.core.*;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import io.dropwizard.hibernate.UnitOfWork;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,21 +90,23 @@ public class UserResource {
     @Timed
     @Path("add")
     @UnitOfWork
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    //@Consumes(MediaType.MULTIPART_FORM_DATA)
     public HashMap<String, Object> addUser(@FormParam("company_id") Optional<Long> companyId,
                         @FormParam("name") Optional<String> name,
                         @FormParam("gender") Optional<String> gender,
                         @FormParam("company_email") Optional<String> companyEmail,
                         @FormParam("contact_number") Optional<String> contactNumber,
-                        @FormParam("verified") Optional<Integer> verified,
-                        @FormDataParam("file") final InputStream fileInputStream,
-                        @FormDataParam("file") final FormDataContentDisposition contentDispositionHeader) throws IOException {
+                        @FormParam("verified") Optional<Integer> verified
+//                        @FormDataParam("file") final InputStream fileInputStream,
+//                        @FormDataParam("file") final FormDataContentDisposition contentDispositionHeader
+                        ) throws IOException {
 
-        String filePath = "~/images/" + contentDispositionHeader.getFileName();
-        saveFile(fileInputStream, filePath);
+        //String filePath = "~/images/" + contentDispositionHeader.getFileName();
+        //saveFile(fileInputStream, filePath);
 
         Company company = companyDAO.findById(companyId.get());
-        String profileImageURL = AWSResource.uploadFile(contentDispositionHeader.getFileName(), filePath);
+        //String profileImageURL = AWSResource.uploadFile(contentDispositionHeader.getFileName(), filePath);
+        String profileImageURL = "https://s3-ap-southeast-1.amazonaws.com/buzkashi/images/profile1.jpeg";
         Long userID = userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL));
         //return userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL.orNull()));
         String emailToken = sendVerificationEmail(name.get(), companyEmail.get());
