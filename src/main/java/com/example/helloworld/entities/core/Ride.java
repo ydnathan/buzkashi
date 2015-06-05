@@ -63,13 +63,12 @@ public class Ride {
     @JsonProperty("updated_at")
     private Timestamp updatedAt;
 
-    @OneToMany(mappedBy = "ride", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @Column(nullable = true)
-    @JsonBackReference
-    private Set<Request> requests;
+    private Request request;
 
     @JsonCreator
-    public Ride(@JsonProperty("user") User user, @JsonProperty("route") Route route, @JsonProperty("leaving_at") Date leavingAt, @JsonProperty("status") RideStatus status) {
+    public Ride(@JsonProperty("user") User user, @JsonProperty("route") Route route, @JsonProperty("leaving_at") Date leavingAt, @JsonProperty("status") RideStatus status, @JsonProperty("request") Request request) {
         this.user = user;
         this.route_id = route.getId();
         this.leavingAt = new Timestamp(leavingAt.getTime());
@@ -77,6 +76,7 @@ public class Ride {
         this.available = true;
         this.createdAt = new Timestamp(Calendar.getInstance().getTime().getTime());
         this.updatedAt = new Timestamp(Calendar.getInstance().getTime().getTime());
+        this.request = request;
     }
 
     public long getId() {
@@ -139,11 +139,11 @@ public class Ride {
         this.updatedAt = updatedAt;
     }
 
-    public Set<Request> getRequests() {
-        return requests;
+    public Request getRequest() {
+        return request;
     }
 
-    public void setRequests(Set<Request> requests) {
-        this.requests = requests;
+    public void setRequest(Request request) {
+        this.request = request;
     }
 }

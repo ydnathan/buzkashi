@@ -72,11 +72,12 @@ public class UserResource {
     private RouteDestinationMapDAO routeDestinationMapDAO;
     private RideDAO rideDAO;
     private PublishedRideDAO publishedRideDAO;
+    private RequestDAO requestDAO;
 
     final static Logger logger = LoggerFactory.getLogger(UserResource.class);
 
     public UserResource(UserDAO userDAO, CompanyDAO companyDAO, DestinationDAO destinationDAO, RouteDAO routeDAO, 
-    		RideDAO rideDAO, PublishedRideDAO publishedRideDAO, RouteDestinationMapDAO routeDestinationMapDAO) {
+    		RideDAO rideDAO, PublishedRideDAO publishedRideDAO, RouteDestinationMapDAO routeDestinationMapDAO, RequestDAO requestDAO) {
         this.companyDAO = companyDAO;
         this.userDAO = userDAO;
         this.destinationDAO = destinationDAO;
@@ -84,6 +85,7 @@ public class UserResource {
         this.rideDAO = rideDAO;
         this.publishedRideDAO = publishedRideDAO;
         this.routeDestinationMapDAO = routeDestinationMapDAO;
+        this.requestDAO = requestDAO;
     }
 
     @POST
@@ -158,13 +160,14 @@ public class UserResource {
                                 /*@FormParam("company_id") Optional<Long> companyId,*/
                                 /*@FormParam("destination_id") Optional<Long> destinationId,*/
                                  @FormParam("route_id") Optional<Long> routeId,
-                                 @FormParam("leaving_at") Optional<String> leavingAt /*2015-05-17T18:34:56*/) {
+                                 @FormParam("leaving_at") Optional<String> leavingAt /*2015-05-17T18:34:56*/,
+                                 @FormParam("request_id") Optional<Long> requestId) {
 
         //TODO: Tomorrow if a user posts a ride from a different company
         /*Company company = companyDAO.findById(companyId.get());*/
 
         User user = userDAO.findById(userId.get());
-
+        Request request = requestDAO.findById(requestId.get());
         Route route = routeDAO.findById(routeId.get());
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date leavingByDate = Calendar.getInstance().getTime();
@@ -174,29 +177,29 @@ public class UserResource {
             e.printStackTrace();
         }
 
-        Ride ride = rideDAO.create(new Ride(user, route, leavingByDate, Ride.RideStatus.OPEN));
+        Ride ride = rideDAO.create(new Ride(user, route, leavingByDate, Ride.RideStatus.OPEN, request));
         return new DepartResponse(ride.getId(), ride.getStatus().name());
     }
 
-    @GET
-    @Timed
-    @Path("ride_seekers")
-    @UnitOfWork
-    public List<RideSeekersResponse> getRideSeekers(@QueryParam("user_id") Optional<Long> userId, @QueryParam("ride_id") Optional<Long> rideId) {
-        // TODO : basic level of authentication..
-        User user = userDAO.findById(userId.get());
-        Ride ride = rideDAO.findById(rideId.get());
-        if(user == null || ride == null) {
-            return new ArrayList<RideSeekersResponse>();
-        }
-
-        List<RideSeekersResponse> rideSeekersResponseList = new ArrayList<RideSeekersResponse>();
-        Set<Request> requests = ride.getRequests();
-        for(Request request : requests) {
-            rideSeekersResponseList.add(new RideSeekersResponse(request));
-        }
-        return rideSeekersResponseList;
-    }
+//    @GET
+//    @Timed
+//    @Path("ride_seekers")
+//    @UnitOfWork
+//    public List<RideSeekersResponse> getRideSeekers(@QueryParam("user_id") Optional<Long> userId, @QueryParam("ride_id") Optional<Long> rideId) {
+//        // TODO : basic level of authentication..
+//        User user = userDAO.findById(userId.get());
+//        Ride ride = rideDAO.findById(rideId.get());
+//        if(user == null || ride == null) {
+//            return new ArrayList<RideSeekersResponse>();
+//        }
+//
+//        List<RideSeekersResponse> rideSeekersResponseList = new ArrayList<RideSeekersResponse>();
+//        Request requests = ride.getRequest();
+//        for(Request request : requests) {
+//            rideSeekersResponseList.add(new RideSeekersResponse(request));
+//        }
+//        return rideSeekersResponseList;
+//    }
     
     @GET
     @Timed
