@@ -96,7 +96,6 @@ public class UserResource {
                         @FormParam("gender") Optional<String> gender,
                         @FormParam("company_email") Optional<String> companyEmail,
                         @FormParam("contact_number") Optional<String> contactNumber,
-                        @FormParam("profile_image_url") Optional<String> profileImageURL,
                         @FormParam("verified") Optional<Integer> verified,
                         @FormDataParam("file") final InputStream fileInputStream,
                         @FormDataParam("file") final FormDataContentDisposition contentDispositionHeader) throws IOException {
@@ -105,7 +104,8 @@ public class UserResource {
         saveFile(fileInputStream, filePath);
 
         Company company = companyDAO.findById(companyId.get());
-        Long userID = userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL.orNull()));
+        String profileImageURL = AWSResource.uploadFile(contentDispositionHeader.getFileName(), filePath);
+        Long userID = userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL));
         //return userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL.orNull()));
         String emailToken = sendVerificationEmail(name.get(), companyEmail.get());
         User user = userDAO.findById(userID);

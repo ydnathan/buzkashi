@@ -25,17 +25,18 @@ import com.amazonaws.AmazonClientException;
 public class AWSResource {
     private static final String SUFFIX = "/";
     public static final String base_images_url= "https://s3-ap-southeast-1.amazonaws.com/buzkashi/images/";
-    public static void uploadFile() {
+    public static String uploadFile(String fileName, String filePath) {
         AWSCredentials credentials = new BasicAWSCredentials("AKIAJ32DHIOXHSN7ZHSA", "r+eFWMyEev9Qd51E8AYhn6qKV6fbocVbwwGjYYr0");
         AmazonS3 s3client = new AmazonS3Client(credentials);
         String bucketName = "buzkashi";
         String folderName = "images";
-        String fileName = folderName + SUFFIX + "profile1.jpeg";
+        fileName = folderName + "/" + fileName;
         try {
             System.out.println("Uploading a new object to S3");
             s3client.putObject(new PutObjectRequest(bucketName, fileName,
-                    new File("C:\\Users\\user\\Desktop\\profile1.jpeg"))
+                    new File(filePath))
                     .withCannedAcl(CannedAccessControlList.PublicRead));
+            return "https://s3-ap-southeast-1.amazonaws.com/buzkashi/images/"+fileName;
         } catch (AmazonServiceException ase) {
             System.out.println("Caught an AmazonServiceException, which " +
                     "means your request made it " +
@@ -54,6 +55,7 @@ public class AWSResource {
                     "such as not being able to access the network.");
             System.out.println("Error Message: " + ace.getMessage());
         }
+        return null;
     }
 
 }

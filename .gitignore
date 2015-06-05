@@ -4,5 +4,5 @@ target/
 *project*
 *settings*
 *.iml
-dependency-reduced-pom.xml
+*dependency-reduced-pom.xml*
 /target
