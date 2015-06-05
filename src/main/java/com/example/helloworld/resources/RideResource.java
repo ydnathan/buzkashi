@@ -75,27 +75,27 @@ public class RideResource {
         return searchRidesResponses;
     }
 
-    @POST
-    @Timed
-    @Path("request")
-    @UnitOfWork
-    public RequestRideResponse requestRide(@FormParam("ride_taker_user_id") Optional<Long> rideTakerUserId, @FormParam("ride_giver_user_id") Optional<Long> rideGiverUserId, @FormParam("ride_id") Optional<Long> rideId, @FormParam("destination_id") Optional<Long> destinationId) {
-        User rideGiver = userDAO.findById(rideGiverUserId.get());
-        User rideTaker = userDAO.findById(rideTakerUserId.get());
-        Ride ride = rideDAO.findById(rideId.get());
-        Destination destination = destinationDAO.findById(destinationId.get());
-        if(rideGiver == null || rideTaker == null || ride == null || destination == null) {
-            return new RequestRideResponse();
-        }
-
-        List<Request> existingRequests = requestDAO.searchRequests(destination, ride, rideTaker);
-        if(existingRequests!=null && existingRequests.size() > 0) {
-            logger.debug("[WARN] already existing request found for the same ride/destination by same user, returning the same");
-            return new RequestRideResponse(existingRequests.get(0));
-        }
-
-        Request request = requestDAO.create(new Request(ride, rideTaker, destination));
-        return new RequestRideResponse(request);
-    }
+//    @POST
+//    @Timed
+//    @Path("request")
+//    @UnitOfWork
+//    public RequestRideResponse requestRide(@FormParam("ride_taker_user_id") Optional<Long> rideTakerUserId, @FormParam("ride_giver_user_id") Optional<Long> rideGiverUserId, @FormParam("ride_id") Optional<Long> rideId, @FormParam("destination_id") Optional<Long> destinationId) {
+//        User rideGiver = userDAO.findById(rideGiverUserId.get());
+//        User rideTaker = userDAO.findById(rideTakerUserId.get());
+//        Ride ride = rideDAO.findById(rideId.get());
+//        Destination destination = destinationDAO.findById(destinationId.get());
+//        if(rideGiver == null || rideTaker == null || ride == null || destination == null) {
+//            return new RequestRideResponse();
+//        }
+//
+//        List<Request> existingRequests = requestDAO.searchRequests(destination, ride, rideTaker);
+//        if(existingRequests!=null && existingRequests.size() > 0) {
+//            logger.debug("[WARN] already existing request found for the same ride/destination by same user, returning the same");
+//            return new RequestRideResponse(existingRequests.get(0));
+//        }
+//
+//        Request request = requestDAO.create(new Request(ride, rideTaker, destination));
+//        return new RequestRideResponse(request);
+//    }
 
 }

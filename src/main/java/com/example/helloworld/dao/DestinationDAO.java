@@ -1,6 +1,7 @@
 package com.example.helloworld.dao;
 
 import com.example.helloworld.entities.core.Destination;
+import com.example.helloworld.entities.core.User;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -17,9 +18,7 @@ public class DestinationDAO extends AbstractDAO<Destination> {
         super(factory);
     }
 
-    public Destination findById(Long id) {
-        return get(id);
-    }
+    public Destination findById(Long id) { return get(id); }
 
     public List<Destination> findById(List<Long> idList) {
         Criteria criteria = currentSession().createCriteria(Destination.class).add(Restrictions.in("id", idList));

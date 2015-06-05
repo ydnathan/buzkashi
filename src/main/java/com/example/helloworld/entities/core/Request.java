@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by vaidyanathan.s on 10/05/15.
@@ -32,7 +33,7 @@ public class Request {
 
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Ride ride;
+    private Company source;
 
 //    @JsonProperty("destination")
 //    @Column(name="destination")
@@ -49,34 +50,30 @@ public class Request {
     @Enumerated(EnumType.ORDINAL)
     private RequestStatus status;
 
-    @Column(name="created_at")
-    @JsonProperty("created_at")
-    private Timestamp createdAt;
+    @Column(name="request_created_at")
+    @JsonProperty("request_created_at")
+    private Timestamp requestCreatedAt;
 
-    @Column(name="updated_at")
-    @JsonProperty("updated_at")
-    private Timestamp updatedAt;
+    @Column(name="request_updated_at")
+    @JsonProperty("request_updated_at")
+    private Timestamp requestUpdatedAt;
 
+//user_id, request_created_at, status (cancelled, confirmed, pending, expired, deleted), acked_giver, source_id, destination_ids(CSV)
     @JsonCreator
-    public Request(@JsonProperty("ride") Ride ride, @JsonProperty("user") User user, @JsonProperty("destination_id") Destination destination) {
-        this.ride = ride;
+    public Request(@JsonProperty("user") User user,
+                @JsonProperty("source") Company company,
+                @JsonProperty("destination") Destination destination
+    ) {
         this.user = user;
-        this.status = RequestStatus.REQUESTED;
+        this.source = company;
         this.destination = destination;
-        this.createdAt = new Timestamp(Calendar.getInstance().getTime().getTime());
-        this.updatedAt = new Timestamp(Calendar.getInstance().getTime().getTime());
+        this.requestCreatedAt = new Timestamp(Calendar.getInstance().getTime().getTime());
+        this.requestUpdatedAt = new Timestamp(Calendar.getInstance().getTime().getTime());
+        this.status = RequestStatus.REQUESTED;
     }
 
     public long getId() {
         return id;
-    }
-
-    public Ride getRide() {
-        return ride;
-    }
-
-    public void setRide(Ride ride) {
-        this.ride = ride;
     }
 
     public User getUser() {
@@ -103,19 +100,21 @@ public class Request {
         this.destination = destination;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
+    public Company getSource() { return source; }
+
+    public void setSource(Company source) { this.source = source; }
+
+    public Timestamp getRequestCreatedAt() {
+        return requestCreatedAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setRequestCreatedAt(Timestamp requestCreatedAt) {
+        this.requestCreatedAt = requestCreatedAt;
     }
 
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
+    public Timestamp getRequestUpdatedAt() { return requestUpdatedAt; }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setRequestUpdatedAt(Timestamp requestUpdatedAt) {
+        this.requestUpdatedAt = requestUpdatedAt;
     }
 }

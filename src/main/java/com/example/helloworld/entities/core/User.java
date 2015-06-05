@@ -54,21 +54,14 @@ public class User {
     @JsonProperty("contact_number")
     private String contactNumber;
 
-    @Column(name="ride_giver")
-    @JsonProperty("ride_giver")
-    private boolean rideGiver;
-
-    @Column(name="vehicle_capacity")
-    @JsonProperty("vehicle_capacity")
-    private int vehicleCapacity;
-
-    @Column(name="vehicle_number")
-    @JsonProperty("vehicle_number")
-    private String vehicleNumber;
 
     @Column(name="profile_image_url")
     @JsonProperty("profile_image_url")
     private String profileImageURL;
+
+    @Column(name="email_token")
+    @JsonProperty("email_token")
+    private String emailToken;
 
     @Column(name="verified")
     @JsonProperty("verified")
@@ -96,9 +89,6 @@ public class User {
                 @JsonProperty("gender") String gender,
                 @JsonProperty("company_email") String companyEmail,
                 @JsonProperty("contact_number") String contactNumber,
-                @JsonProperty("ride_giver") boolean rideGiver,
-                @JsonProperty("vehicle_capacity") int vehicleCapacity,
-                @JsonProperty("vehicle_number") String vehicleNumber,
                 @JsonProperty("profile_image_url") String profileImageURL
                 ) {
         this.company = company;
@@ -106,11 +96,9 @@ public class User {
         this.gender = gender;
         this.companyEmail = companyEmail;
         this.contactNumber = contactNumber;
-        this.rideGiver = rideGiver;
-        this.vehicleCapacity = vehicleCapacity;
-        this.vehicleNumber = vehicleNumber;
         this.profileImageURL = profileImageURL;
         this.verified = VerificationStatus.UNVERIFIED;
+        this.emailToken = "";
     }
 
     public long getId() {
@@ -147,30 +135,6 @@ public class User {
 
     public void setContactNumber(String contactNumber) {
         this.contactNumber = contactNumber;
-    }
-
-    public boolean isRideGiver() {
-        return rideGiver;
-    }
-
-    public void setRideGiver(boolean rideGiver) {
-        this.rideGiver = rideGiver;
-    }
-
-    public int getVehicleCapacity() {
-        return vehicleCapacity;
-    }
-
-    public void setVehicleCapacity(int vehicleCapacity) {
-        this.vehicleCapacity = vehicleCapacity;
-    }
-
-    public String getVehicleNumber() {
-        return vehicleNumber;
-    }
-
-    public void setVehicleNumber(String vehicleNumber) {
-        this.vehicleNumber = vehicleNumber;
     }
 
     public String getProfileImageURL() {
@@ -211,5 +175,13 @@ public class User {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public String getEmailToken() {
+        return emailToken;
+    }
+
+    public void setEmailToken(String emailToken) {
+        this.emailToken = emailToken;
     }
 }

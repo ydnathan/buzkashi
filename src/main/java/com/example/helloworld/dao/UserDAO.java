@@ -19,4 +19,14 @@ public class UserDAO extends AbstractDAO<User> {
     public long create(User user) {
         return persist(user).getId();
     }
+
+    public void updateUserVerification(User.VerificationStatus code, User user) {
+        user.setVerified(code);
+        persist(user);
+    }
+
+    public void updateEmailToken(User user, String emailToken) {
+        user.setEmailToken(emailToken);
+        persist(user);
+    }
 }

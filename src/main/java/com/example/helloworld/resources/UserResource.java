@@ -43,17 +43,27 @@ public class UserResource {
     @Timed
     @Path("add")
     @UnitOfWork
-    public Long addUser(@FormParam("company_id") Optional<Long> companyId,
+    public HashMap<String, Object> addUser(@FormParam("company_id") Optional<Long> companyId,
                         @FormParam("name") Optional<String> name,
                         @FormParam("gender") Optional<String> gender,
                         @FormParam("company_email") Optional<String> companyEmail,
                         @FormParam("contact_number") Optional<String> contactNumber,
-                        @FormParam("ride_giver") Optional<Boolean> rideGiver,
-                        @FormParam("vehicle_capacity") Optional<Integer> vehicleCapacity,
-                        @FormParam("vehicle_number") Optional<String> vehicleNumber,
-                        @FormParam("profile_image_url") Optional<String> profileImageURL) {
+                        @FormParam("profile_image_url") Optional<String> profileImageURL,
+                        @FormParam("verified") Optional<Integer> verified) {
         Company company = companyDAO.findById(companyId.get());
-        return userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), rideGiver.get(), vehicleCapacity.or(-1), vehicleNumber.orNull(), profileImageURL.orNull()));
+        Long userID = userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL.orNull()));
+        //return userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL.orNull()));
+        String emailToken = sendVerificationEmail(name.get(), companyEmail.get());
+        User user = userDAO.findById(userID);
+        userDAO.updateEmailToken(user, emailToken);
+        HashMap<String, Object> returnValue = new HashMap<String, Object>();
+        returnValue.put("verificationCode", emailToken);
+        returnValue.put("userID", userID);
+        return returnValue;
+    }
+
+    private String sendVerificationEmail(String name, String email) {
+        return name+email;
     }
 
     @GET
@@ -62,6 +72,16 @@ public class UserResource {
     @UnitOfWork
     public User findUser(@QueryParam("id") Optional<Long> user_id) {
         return userDAO.findById(user_id.get());
+    }
+
+
+    @PUT
+    @Timed
+    @Path("verify")
+    public void verify(@FormParam("verified") String verified,
+                       @FormParam("user_id") Optional<Long> userId) {
+        User user = userDAO.findById(userId.get());
+        userDAO.updateUserVerification(User.VerificationStatus.valueOf(verified), user);
     }
 
     @POST
