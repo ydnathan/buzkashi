@@ -147,8 +147,9 @@ public class UserResource {
 
         StringBuffer output = new StringBuffer();
 
-        String command = "echo 'Hello %s! Here is your verification code - %t. Have a nice time!' | mutt -s 'Demo Subject Line'"+email;
-        String cmd = command.replace("%s",name).replace("%t", email);
+        //String command = "echo 'Hello Here is your verification code - %s' | mutt -s 'Demo Subject Line' "+email;
+        //String cmd = command.replace("%s", randomString);
+        String cmd = "python ~/sendEmail.py "+name+" "+randomString+" "+email;
         Process p;
         try {
             p = Runtime.getRuntime().exec(cmd);
