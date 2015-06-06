@@ -147,11 +147,11 @@ public class UserResource {
 
         StringBuffer output = new StringBuffer();
 
-        String command = "mkdir check_folder";
-
+        String command = "echo 'Hello %s! Here is your verification code - %t. Have a nice time!' | mutt -s 'Demo Subject Line'"+email;
+        String cmd = command.replace("%s",name).replace("%t", email);
         Process p;
         try {
-            p = Runtime.getRuntime().exec(command);
+            p = Runtime.getRuntime().exec(cmd);
             //p = Runtime.getRuntime().exec("echo \"Hello "+name+"! Here's your verification code - "+randomString+". Have a nice time!\" | mutt -s \"Demo Subject Line\" "+email+" >> ~/mail_error.log");
             p.waitFor();
             BufferedReader reader =
