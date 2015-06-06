@@ -8,6 +8,7 @@ import com.example.helloworld.entities.core.*;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,8 +131,16 @@ public class UserResource {
         out.close();
     }
 
-    private String sendVerificationEmail(String name, String email) {
-        return name+email;
+    private String sendVerificationEmail(String name, String email) throws IOException {
+        String randomString = generateRandomString();
+        Runtime rt = Runtime.getRuntime();
+        Process pr = rt.exec("echo \"Hello "+name+"! Here's your verification code - "+randomString+". Have a nice time!\" | mutt -s \"Demo Subject Line\" " +email);
+        BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+        return randomString;
+    }
+
+    public String generateRandomString() {
+        return RandomStringUtils.random(10, true, false);
     }
 
     @GET
