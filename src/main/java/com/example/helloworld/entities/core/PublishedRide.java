@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,11 +39,12 @@ public class PublishedRide {
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private User user;
+    
+    @JsonManagedReference
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Route route;
 
-    @JsonProperty("route_id")
-    private long route_id;
-
-    @Column(name="available")
+	@Column(name="available")
     @JsonProperty("available")
     private boolean available;
 
@@ -50,10 +53,10 @@ public class PublishedRide {
     @JsonProperty("leaving_at")
     private Timestamp leavingAt;
 
-    @Column(name="status")
-    @JsonProperty("status")
-    @Enumerated(EnumType.ORDINAL)
-    private RideStatus status;
+//    @Column(name="status")
+//    @JsonProperty("status")
+//    @Enumerated(EnumType.ORDINAL)
+//    private RideStatus status;
 
     @Column(name="created_at")
     @JsonProperty("created_at")
@@ -62,14 +65,10 @@ public class PublishedRide {
     @Column(name="updated_at")
     @JsonProperty("updated_at")
     private Timestamp updatedAt;
-    
-    @Column(name="source_id")
-    @JsonProperty("source_id")
-    private String companyId;
-    
-    @Column(name="destination_id")
-    @JsonProperty("source_id")
-    private String destinationId;
+        
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false)
+    private Company company;
 
 //    @OneToMany(mappedBy = "ride", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 //    @Column(nullable = true)
@@ -77,17 +76,28 @@ public class PublishedRide {
 //    private Set<Ride> rides;
 
     @JsonCreator
-    public PublishedRide(@JsonProperty("user") User user, @JsonProperty("route") Route route, @JsonProperty("leaving_at") Date leavingAt, @JsonProperty("status") RideStatus status) {
+    public PublishedRide(@JsonProperty("user") User user, @JsonProperty("route") Route route, @JsonProperty("leaving_at") Date leavingAt, 
+    		//@JsonProperty("status") RideStatus status, 
+    		@JsonProperty("source") Company company) {
         this.user = user;
-        this.route_id = route.getId();
+        this.route = route;
         this.leavingAt = new Timestamp(leavingAt.getTime());
-        this.status = status;
+        //this.status = status;
         this.available = true;
         this.createdAt = new Timestamp(Calendar.getInstance().getTime().getTime());
         this.updatedAt = new Timestamp(Calendar.getInstance().getTime().getTime());
+        this.company = company;
     }
 
-    public long getId() {
+    public Company getCompany() {
+		return company;
+	}
+
+	public void setCompany(Company company) {
+		this.company = company;
+	}
+
+	public long getId() {
         return id;
     }
 
@@ -99,16 +109,12 @@ public class PublishedRide {
         this.user = user;
     }
 
-    public long getRoute_id() {
-        return route_id;
+    public Route getRoute() {
+        return route;
     }
 
-    public long getRouteId() {
-        return route_id;
-    }
-
-    public void setRoute_id(long route_id) {
-        this.route_id = route_id;
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
     public boolean isAvailable() {
@@ -127,13 +133,13 @@ public class PublishedRide {
         this.leavingAt = leavingAt;
     }
 
-    public RideStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RideStatus status) {
-        this.status = status;
-    }
+//    public RideStatus getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(RideStatus status) {
+//        this.status = status;
+//    }
 
     public Timestamp getCreatedAt() {
         return createdAt;

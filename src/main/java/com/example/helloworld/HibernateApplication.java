@@ -3,11 +3,13 @@ package com.example.helloworld;
 import com.example.helloworld.dao.*;
 import com.example.helloworld.entities.core.*;
 import com.example.helloworld.resources.*;
+
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+
 //import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.hibernate.SessionFactory;
 
@@ -44,6 +46,7 @@ public class HibernateApplication extends Application<HibernateConfiguration> {
         environment.jersey().register(new UserResource(userDAO, companyDAO, destinationDAO, routeDAO, rideDAO,publishedRideDAO, routeDestinationMapDAO, requestDAO));
         environment.jersey().register(new RouteResource(routeDAO, userDAO, companyDAO, destinationDAO, routeDestinationMapDAO));
         environment.jersey().register(new RideResource(rideDAO, userDAO, requestDAO, destinationDAO,companyDAO,routeDAO,routeDestinationMapDAO,publishedRideDAO));
+        environment.jersey().register(new RequestResource(userDAO, companyDAO, destinationDAO, routeDAO,requestDAO));
         //environment.jersey().register(MultiPartFeature.class);
         environment.jersey().register(new PersonResource(new PersonDAO(sessionFactory)));
     }

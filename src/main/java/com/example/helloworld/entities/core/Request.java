@@ -3,9 +3,11 @@ package com.example.helloworld.entities.core;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
@@ -35,8 +37,6 @@ public class Request {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Company source;
 
-//    @JsonProperty("destination")
-//    @Column(name="destination")
     @JsonManagedReference
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Destination destination;
@@ -94,6 +94,14 @@ public class Request {
 
     public Destination getDestination() {
         return destination;
+    }
+
+    public Long getDestinationId() {
+        return destination.getId();
+    }
+
+    public Long getDestination_id() {
+        return destination.getId();
     }
 
     public void setDestination(Destination destination) {

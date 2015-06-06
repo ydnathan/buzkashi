@@ -173,12 +173,13 @@ public class RideResource {
     
     @POST
     @Timed
-    @Path("createRide")
+    @Path("createPublishedRide")
     @UnitOfWork
-    public PublishedRide createRide(@FormParam("user_id") Optional<Long> userId, @FormParam("company_id") Optional<Long> companyId, 
+    public PublishedRide createPublishedRide(@FormParam("user_id") Optional<Long> userId, @FormParam("company_id") Optional<Long> companyId, 
     		@FormParam("destination_ids") Optional<String> destinationIdStr,@QueryParam("leaving_at") Optional<String> leavingAt) {
     	User createdBy = userDAO.findById(userId.get());
         Route route = createRoute(createdBy, companyId, destinationIdStr);
+        Company company = companyDAO.findById(companyId.get());
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         Date leavingByDate = Calendar.getInstance().getTime();
         try {
@@ -187,7 +188,7 @@ public class RideResource {
             e.printStackTrace();
         }
 
-        return publishedRideDAO.create(new PublishedRide(createdBy, route, leavingByDate,RideStatus.OPEN));
+        return publishedRideDAO.create(new PublishedRide(createdBy, route, leavingByDate, company));
     }
 
 	private Route createRoute(User createdBy, Optional<Long> companyId,

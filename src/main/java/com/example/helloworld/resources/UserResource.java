@@ -103,7 +103,7 @@ public class UserResource {
 
         //String filePath = "~/images/" + contentDispositionHeader.getFileName();
         //saveFile(fileInputStream, filePath);
-
+    	logger.info(" >>>>>>>>>>>>>Company id "+companyId+"   get value "+companyId.get());
         Company company = companyDAO.findById(companyId.get());
         //String profileImageURL = AWSResource.uploadFile(contentDispositionHeader.getFileName(), filePath);
         String profileImageURL = "https://s3-ap-southeast-1.amazonaws.com/buzkashi/images/profile1.jpeg";
@@ -201,32 +201,48 @@ public class UserResource {
 //        return rideSeekersResponseList;
 //    }
     
+//    @GET
+//    @Timed
+//    @Path("published_ride_seekers")
+//    @UnitOfWork
+//    public List<RideSeekersResponse> getPublishedRideSedekers(@QueryParam("user_id") Optional<Long> userId, @QueryParam("route_id") Optional<Long> routeId, @QueryParam("source_id") Optional<Long> sourceId) {
+//        User user = userDAO.findById(userId.get());
+//        //PublishedRide ride = publishedRideDAO.findById(id);
+//        
+//        if(user == null || ride == null) {
+//            return new ArrayList<RideSeekersResponse>();
+//        }
+//
+//        List<RideSeekersResponse> rideSeekersResponseList = new ArrayList<RideSeekersResponse>();
+//        Set<Request> requests = getRequests(ride);
+//        for(Request request : requests) {
+//            rideSeekersResponseList.add(new RideSeekersResponse(request));
+//        }
+//        return rideSeekersResponseList;
+//    }
+    
     @GET
     @Timed
     @Path("published_ride_seekers")
     @UnitOfWork
-    public List<RideSeekersResponse> getPublishedRideSeekers(@QueryParam("user_id") Optional<Long> userId, @QueryParam("ride_id") Optional<Long> rideId) {
-        // TODO : basic level of authentication..
-        User user = userDAO.findById(userId.get());
-        PublishedRide ride = publishedRideDAO.findById(rideId.get());
-        if(user == null || ride == null) {
-            return new ArrayList<RideSeekersResponse>();
-        }
-
-        List<RideSeekersResponse> rideSeekersResponseList = new ArrayList<RideSeekersResponse>();
-        Set<Request> requests = getRequests(ride);
-        for(Request request : requests) {
-            rideSeekersResponseList.add(new RideSeekersResponse(request));
-        }
-        return rideSeekersResponseList;
+    public List<RideSeekersResponse> getPublishedRideSeekers(@QueryParam("user_id") Optional<Long> userId, @QueryParam("route_id") Optional<Long> routeId, @QueryParam("source_id") Optional<Long> sourceId) {
+    	User user = userDAO.findById(userId.get());
+    	Set<Request> requests = getRequests(routeId.get(),sourceId.get());
+    	List<RideSeekersResponse> rideSeekersResponseList = new ArrayList<RideSeekersResponse>();
+    	for(Request request : requests){
+    		rideSeekersResponseList.add(new RideSeekersResponse(request));
+    	}
+    	return rideSeekersResponseList;
     }
     
-    private Set<Request> getRequests(PublishedRide ride){
-    	long routeId = ride.getRouteId();
+    private Set<Request> getRequests(Long routeId, Long sourceId){
     	Set<Request> requests =  new HashSet<Request>();
     	List<RouteDestinationMap> destinationMaps = routeDestinationMapDAO.findAllDestinationMapsByRouteId(routeId);
     	for(RouteDestinationMap map : destinationMaps){
-    		requests.addAll(routeDAO.findRequestsByDestinationId(map.getDestinationId()));
+    		//System.out.println("in get request destination map = " +map.getDestinationId());
+    		Destination destination = destinationDAO.findById(map.getDestination_id());
+    		Company source = companyDAO.findById(sourceId);
+    		requests.addAll(requestDAO.findRequestsByDestinationIdAndSourceId(destination,source));
     	}
     	return requests;
     	
