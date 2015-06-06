@@ -1,9 +1,10 @@
 package com.example.helloworld.resources;
 
+import com.amazonaws.util.json.JSONException;
+import com.amazonaws.util.json.JSONObject;
 import com.codahale.metrics.annotation.Timed;
 import com.example.helloworld.dao.*;
-import com.example.helloworld.entities.DepartResponse;
-import com.example.helloworld.entities.RideSeekersResponse;
+import com.example.helloworld.entities.*;
 import com.example.helloworld.entities.core.*;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
@@ -92,15 +93,15 @@ public class UserResource {
     @Path("add")
     @UnitOfWork
     //@Consumes(MediaType.MULTIPART_FORM_DATA)
-    public HashMap<String, Object> addUser(@FormParam("company_id") Optional<Long> companyId,
-                        @FormParam("name") Optional<String> name,
-                        @FormParam("gender") Optional<String> gender,
-                        @FormParam("company_email") Optional<String> companyEmail,
-                        @FormParam("contact_number") Optional<String> contactNumber,
-                        @FormParam("verified") Optional<Integer> verified
+    public AddUserResponse addUser(@FormParam("company_id") Optional<Long> companyId,
+                              @FormParam("name") Optional<String> name,
+                              @FormParam("gender") Optional<String> gender,
+                              @FormParam("company_email") Optional<String> companyEmail,
+                              @FormParam("contact_number") Optional<String> contactNumber,
+                              @FormParam("verified") Optional<Integer> verified
 //                        @FormDataParam("file") final InputStream fileInputStream,
 //                        @FormDataParam("file") final FormDataContentDisposition contentDispositionHeader
-                        ) throws IOException {
+    ) throws IOException {
 
         //String filePath = "~/images/" + contentDispositionHeader.getFileName();
         //saveFile(fileInputStream, filePath);
@@ -113,10 +114,19 @@ public class UserResource {
         String emailToken = sendVerificationEmail(name.get(), companyEmail.get());
         User user = userDAO.findById(userID);
         userDAO.updateEmailToken(user, emailToken);
-        HashMap<String, Object> returnValue = new HashMap<String, Object>();
-        returnValue.put("verificationCode", emailToken);
-        returnValue.put("userID", userID);
-        return returnValue;
+        //HashMap<String, Object> returnValue = new HashMap<String, Object>();
+
+//        JSONObject obj = new JSONObject();
+//
+//        try {
+//            obj.put("userID", userID);
+//            obj.put("verificationCode", emailToken);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return (obj);
+
+        return new AddUserResponse(emailToken, userID+"");
     }
 
     private void saveFile(InputStream uploadedInputStream, String uploadedFileLocation) throws IOException {
@@ -133,9 +143,40 @@ public class UserResource {
 
     private String sendVerificationEmail(String name, String email) throws IOException {
         String randomString = generateRandomString();
-        Runtime rt = Runtime.getRuntime();
-        Process pr = rt.exec("echo \"Hello "+name+"! Here's your verification code - "+randomString+". Have a nice time!\" | mutt -s \"Demo Subject Line\" " +email);
-        BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+
+
+        StringBuffer output = new StringBuffer();
+
+        String command = "mkdir check_folder";
+
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(command);
+            //p = Runtime.getRuntime().exec("echo \"Hello "+name+"! Here's your verification code - "+randomString+". Have a nice time!\" | mutt -s \"Demo Subject Line\" "+email+" >> ~/mail_error.log");
+            p.waitFor();
+            BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(p.getInputStream()));
+
+            String line = "";
+            while ((line = reader.readLine())!= null) {
+                output.append(line + "\n");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
+
+
+//        Runtime rt = Runtime.getRuntime();
+//        System.out.println("email id = " +email);
+//        Process pr = rt.exec("echo \"Hello "+name+"! Here's your verification code - "+randomString+". Have a nice time!\" | mutt -s \"Demo Subject Line\" "+email+" >> ~/mail_error.log");
+//        BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
         return randomString;
     }
 
