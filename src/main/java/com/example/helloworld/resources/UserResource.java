@@ -8,8 +8,20 @@ import com.example.helloworld.entities.*;
 import com.example.helloworld.entities.core.*;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
+//import com.sun.jersey.api.client.Client;
+//import com.sun.jersey.api.client.WebResource;
+//import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+//import com.sun.jersey.core.util.MultivaluedMapImpl;
 import io.dropwizard.hibernate.UnitOfWork;
+import org.apache.commons.codec.binary.*;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
+import org.glassfish.jersey.client.ClientResponse;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,16 +29,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -58,6 +67,7 @@ import com.example.helloworld.entities.core.Route;
 import com.example.helloworld.entities.core.RouteDestinationMap;
 import com.example.helloworld.entities.core.User;
 import com.google.common.base.Optional;
+import org.glassfish.jersey.client.JerseyClient;
 
 /**
  * Created by vaidyanathan.s on 11/05/15.
@@ -144,45 +154,32 @@ public class UserResource {
     private String sendVerificationEmail(String name, String email) throws IOException {
         String randomString = generateRandomString();
 
-
-        StringBuffer output = new StringBuffer();
-
-        //String command = "echo 'Hello Here is your verification code - %s' | mutt -s 'Demo Subject Line' "+email;
-        //String cmd = command.replace("%s", randomString);
-        String cmd = "python ~/sendEmail.py "+name+" "+randomString+" "+email;
-        Process p;
-        try {
-            p = Runtime.getRuntime().exec(cmd);
-            //p = Runtime.getRuntime().exec("echo \"Hello "+name+"! Here's your verification code - "+randomString+". Have a nice time!\" | mutt -s \"Demo Subject Line\" "+email+" >> ~/mail_error.log");
-            p.waitFor();
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-            String line = "";
-            while ((line = reader.readLine())!= null) {
-                output.append(line + "\n");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        String encoding = new String(org.apache.commons.codec.binary.Base64.encodeBase64("api:key-c708d1c53f513f5f325431a6d3d0a0e4".getBytes()));
+//        URL url = new URL("https://api.mailgun.net/v3/sandboxcc7aede96ed94fb88f6fedaf9b1c3ffd.mailgun.org/messages");
+//        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//        connection.setRequestMethod("POST");
+//        connection.setDoOutput(true);
+//        connection.setRequestProperty("Authorization", "Basic " + encoding);
+//        connection.addRequestProperty("from", "Buzkashi <excited@samples.mailgun.org>");
+//        connection.addRequestProperty("to", email);
+//        connection.addRequestProperty("subject", "Buzkashi : Verification code");
+//        connection.addRequestProperty("text", "Hello " +name+ "! Here's your verification code - " +randomString);
+//        connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+//
+//        InputStream content = (InputStream)connection.getInputStream();
+//        BufferedReader in = new BufferedReader (new InputStreamReader (content));
+//        String line;
+//        while ((line = in.readLine()) != null) {
+//            System.out.println(line);
+//        }
 
 
-
-
-
-
-
-
-//        Runtime rt = Runtime.getRuntime();
-//        System.out.println("email id = " +email);
-//        Process pr = rt.exec("echo \"Hello "+name+"! Here's your verification code - "+randomString+". Have a nice time!\" | mutt -s \"Demo Subject Line\" "+email+" >> ~/mail_error.log");
-//        BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+        //System.out.println("result of posting to mailgun: " + cr.toString());
         return randomString;
     }
 
     public String generateRandomString() {
-        return RandomStringUtils.random(10, true, false);
+        return RandomStringUtils.random(6, false, true);
     }
 
     @GET
