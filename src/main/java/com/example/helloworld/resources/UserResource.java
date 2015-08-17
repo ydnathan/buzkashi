@@ -1,37 +1,22 @@
 package com.example.helloworld.resources;
 
-import com.amazonaws.util.json.JSONException;
-import com.amazonaws.util.json.JSONObject;
 import com.codahale.metrics.annotation.Timed;
 import com.example.helloworld.dao.*;
 import com.example.helloworld.entities.*;
 import com.example.helloworld.entities.core.*;
 import com.google.common.base.Optional;
-import com.google.common.io.Files;
-//import com.sun.jersey.api.client.Client;
-//import com.sun.jersey.api.client.WebResource;
-//import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-//import com.sun.jersey.core.util.MultivaluedMapImpl;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import io.dropwizard.hibernate.UnitOfWork;
-import org.apache.commons.codec.binary.*;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.glassfish.jersey.client.ClientResponse;
-import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,12 +29,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.codahale.metrics.annotation.Timed;
 import com.example.helloworld.dao.CompanyDAO;
 import com.example.helloworld.dao.DestinationDAO;
 import com.example.helloworld.dao.PublishedRideDAO;
@@ -60,14 +40,11 @@ import com.example.helloworld.dao.UserDAO;
 import com.example.helloworld.entities.DepartResponse;
 import com.example.helloworld.entities.RideSeekersResponse;
 import com.example.helloworld.entities.core.Company;
-import com.example.helloworld.entities.core.PublishedRide;
 import com.example.helloworld.entities.core.Request;
 import com.example.helloworld.entities.core.Ride;
 import com.example.helloworld.entities.core.Route;
 import com.example.helloworld.entities.core.RouteDestinationMap;
 import com.example.helloworld.entities.core.User;
-import com.google.common.base.Optional;
-import org.glassfish.jersey.client.JerseyClient;
 
 /**
  * Created by vaidyanathan.s on 11/05/15.
@@ -109,34 +86,17 @@ public class UserResource {
                               @FormParam("company_email") Optional<String> companyEmail,
                               @FormParam("contact_number") Optional<String> contactNumber,
                               @FormParam("verified") Optional<Integer> verified
-//                        @FormDataParam("file") final InputStream fileInputStream,
-//                        @FormDataParam("file") final FormDataContentDisposition contentDispositionHeader
     ) throws IOException {
-
         //String filePath = "~/images/" + contentDispositionHeader.getFileName();
         //saveFile(fileInputStream, filePath);
-    	logger.info(" >>>>>>>>>>>>>Company id "+companyId+"   get value "+companyId.get());
         Company company = companyDAO.findById(companyId.get());
         //String profileImageURL = AWSResource.uploadFile(contentDispositionHeader.getFileName(), filePath);
         String profileImageURL = "https://s3-ap-southeast-1.amazonaws.com/buzkashi/images/profile1.jpeg";
         Long userID = userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL));
-        //return userDAO.create(new User(company, name.get(), gender.get(), companyEmail.get(), contactNumber.get(), profileImageURL.orNull()));
-        String emailToken = sendVerificationEmail(name.get(), companyEmail.get());
+        String emailToken = sendVerMail(name.get(), companyEmail.get());
         User user = userDAO.findById(userID);
         userDAO.updateEmailToken(user, emailToken);
-        //HashMap<String, Object> returnValue = new HashMap<String, Object>();
-
-//        JSONObject obj = new JSONObject();
-//
-//        try {
-//            obj.put("userID", userID);
-//            obj.put("verificationCode", emailToken);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return (obj);
-
-        return new AddUserResponse(emailToken, userID+"");
+        return new AddUserResponse(emailToken, userID.toString());
     }
 
     private void saveFile(InputStream uploadedInputStream, String uploadedFileLocation) throws IOException {
@@ -151,34 +111,24 @@ public class UserResource {
         out.close();
     }
 
-    private String sendVerificationEmail(String name, String email) throws IOException {
+    private static String sendVerMail(String name, String email) {
         String randomString = generateRandomString();
-
-//        String encoding = new String(org.apache.commons.codec.binary.Base64.encodeBase64("api:key-c708d1c53f513f5f325431a6d3d0a0e4".getBytes()));
-//        URL url = new URL("https://api.mailgun.net/v3/sandboxcc7aede96ed94fb88f6fedaf9b1c3ffd.mailgun.org/messages");
-//        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//        connection.setRequestMethod("POST");
-//        connection.setDoOutput(true);
-//        connection.setRequestProperty("Authorization", "Basic " + encoding);
-//        connection.addRequestProperty("from", "Buzkashi <excited@samples.mailgun.org>");
-//        connection.addRequestProperty("to", email);
-//        connection.addRequestProperty("subject", "Buzkashi : Verification code");
-//        connection.addRequestProperty("text", "Hello " +name+ "! Here's your verification code - " +randomString);
-//        connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-//
-//        InputStream content = (InputStream)connection.getInputStream();
-//        BufferedReader in = new BufferedReader (new InputStreamReader (content));
-//        String line;
-//        while ((line = in.readLine()) != null) {
-//            System.out.println(line);
-//        }
-
-
-        //System.out.println("result of posting to mailgun: " + cr.toString());
-        return randomString;
+        Client client = Client.create();
+        client.addFilter(new HTTPBasicAuthFilter("api","key-c708d1c53f513f5f325431a6d3d0a0e4"));
+        WebResource webResource = client.resource("https://api.mailgun.net/v3/sandboxcc7aede96ed94fb88f6fedaf9b1c3ffd.mailgun.org/messages");
+        MultivaluedMapImpl formData = new MultivaluedMapImpl();
+        formData.add("from", "Buzkashi <hello@buzkashi.com>");
+        formData.add("to", email);
+        formData.add("subject", "Hello from Buzkashi!");
+        formData.add("text", "Hello " +name+ "! Here's your verification code - " +randomString);
+        ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formData);
+        if (response.getStatus() == 200) {
+            return randomString;
+        }
+        return null;
     }
 
-    public String generateRandomString() {
+    public static String generateRandomString() {
         return RandomStringUtils.random(6, false, true);
     }
 
@@ -287,7 +237,6 @@ public class UserResource {
     	Set<Request> requests =  new HashSet<Request>();
     	List<RouteDestinationMap> destinationMaps = routeDestinationMapDAO.findAllDestinationMapsByRouteId(routeId);
     	for(RouteDestinationMap map : destinationMaps){
-    		//System.out.println("in get request destination map = " +map.getDestinationId());
     		Destination destination = destinationDAO.findById(map.getDestination_id());
     		Company source = companyDAO.findById(sourceId);
     		requests.addAll(requestDAO.findRequestsByDestinationIdAndSourceId(destination,source));
